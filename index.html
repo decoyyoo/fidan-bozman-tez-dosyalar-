@@ -81,25 +81,25 @@
   </div>
 
   <script>
-    // Sorular EK3_Beden_Bölgeleri_Anket_Yapisi.docx’ten alındı
+    // Sorular EK3_Beden_Bölgeleri_Anket_Yapisi.docx’ten alındı :contentReference[oaicite:1]{index=1}
     const regionQuestions = {
       head: [
         "Ağrı",
+        "Uyuşma",
         "Zonklama",
         "Baskı/ ağırlık hissi",
         "Sersemlik/ baş dönmesi"
       ],
       eyes: [
         "Batma hissi",
-        "Kaşıntı",
+        "Kuruluk hissi",
         "Yanma hissi",
         "Göz seyirmesi"
       ],
       mouth: [
         "Dudaklarda seğirme",
         "Diş sıkma",
-        "Çene gerginliği/ kilitlenme",
-        "Yanak ısırma"
+        "Çene gerginliği/ kilitlenme"
       ],
       neck: [
         "Kas gerginliği/ kasılma",
@@ -121,7 +121,7 @@
       ],
       stomach: [
         "Bulantı hissi",
-        "Kramp/ kasılma",
+        "Kıramp/ kasılma",
         "Şişkinlik hissi",
         "Yanma hissi/ mide ekşimesi"
       ],
@@ -132,28 +132,28 @@
         "Tutulma hissi"
       ],
       arms: [
-        "Uyuşma",
+        "Uyuşma/ karıncalanma/ yanma hissi",
         "Ağırlık hissi",
-        "Karıncalanma/ yanma hissi",
+        "Kas gerginliği/ kasılma",
         "Soğukluk/ üşüme hissi"
       ],
       legs: [
-        "Uyuşma",
+        "Uyuşma/ karıncalanma/ yanma hissi",
         "Ağırlık hissi",
-        "Karıncalanma/ yanma hissi",
+        "Huzursuzluk hissi/ hareket ettirme ihtiyacı",
         "Soğukluk/ üşüme hissi"
       ],
       hands: [
-        "Uyuşma/ karıncalanma",
+        "Uyuşma/ karıncalanma/ yanma hissi",
         "Titreme",
-        "Avuç içinde terleme",
-        "Kas gerginliği/ kasılma"
+        "Kas gerginliği/ kasılma",
+        "Soğukluk/ üşüme hissi"
       ],
       feet: [
-        "Uyuşma/ karıncalanma",
-        "Yanma hissi",
+        "Uyuşma/ karıncalanma/ yanma hissi",
         "Batma hissi",
-        "Hissizlik/ donukluk"
+        "Hissizlik/ donukluk",
+        "Soğukluk/ üşüme hissi"
       ]
     };
 
@@ -176,12 +176,12 @@
     const backMap  = document.getElementById('back-map');
     document.getElementById('frontViewBtn').onclick = () => {
       frontMap.classList.remove('hidden');
-      backMap .classList.add('hidden');
+      backMap.classList.add('hidden');
       document.getElementById('frontViewBtn').classList.add('active');
       document.getElementById('backViewBtn').classList.remove('active');
     };
     document.getElementById('backViewBtn').onclick = () => {
-      backMap .classList.remove('hidden');
+      backMap.classList.remove('hidden');
       frontMap.classList.add('hidden');
       document.getElementById('backViewBtn').classList.add('active');
       document.getElementById('frontViewBtn').classList.remove('active');
@@ -191,7 +191,6 @@
       btn.addEventListener('click', () => {
         const region = btn.dataset.region;
         document.getElementById('modalTitle').textContent = regionTitles[region];
-        // checkbox listesi oluştur
         const qs = regionQuestions[region] || [];
         const body = document.getElementById('modalBody');
         if (!qs.length) {
@@ -214,4 +213,4 @@
       document.getElementById('modalOverlay').classList.remove('active');
   </script>
 </body>
-</html>
+</html>    
