@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Etkileşimli Beden Haritası</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family:'Inter',sans-serif; margin:0; padding:0; display:flex; flex-direction:column; align-items:center; background:#f0f2f5; }
+    .button-container { margin:20px 0; display:flex; gap:10px; }
+    .view-button { padding:10px 20px; background:#4f46e5; color:#fff; border:none; border-radius:.5rem; cursor:pointer; font-weight:bold; transition:.2s; }
+    .view-button.active { background:#2563eb; }
+    .map-wrapper { position:relative; width:400px; max-width:90%; margin-bottom:20px; }
+    img { width:100%; display:block; border-radius:1rem; box-shadow:0 10px 20px rgba(0,0,0,0.1); }
+    .hotspot { position:absolute; background:transparent; border:none; cursor:pointer; }
+    .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); display:flex; justify-content:center; align-items:center; opacity:0; visibility:hidden; transition:.3s; z-index:1000; }
+    .modal-overlay.active { opacity:1; visibility:visible; }
+    .modal-content { background:#fff; padding:2rem; border-radius:1rem; max-width:500px; width:90%; max-height:80vh; overflow-y:auto; position:relative; transform:translateY(-20px); transition:.3s; }
+    .modal-overlay.active .modal-content { transform:translateY(0); }
+    .modal-content h3 { font-size:1.5rem; margin-bottom:1rem; }
+    .modal-content .question { margin-bottom:0.75rem; }
+    .modal-content .question label { cursor:pointer; display:flex; align-items:center; gap:0.5rem; }
+    .modal-close-btn { position:absolute; top:1rem; right:1rem; background:none; border:none; font-size:2rem; cursor:pointer; color:#888; }
+    .modal-close-btn:hover { color:#333; }
+  </style>
+</head>
+<body>
+  <h1 class="text-2xl font-bold mt-6">Beden Haritası Anketi</h1>
+  <div class="button-container">
+    <button id="frontViewBtn" class="view-button active">Ön Görünüm</button>
+    <button id="backViewBtn" class="view-button">Arka Görünüm</button>
+  </div>
+
+  <!-- Ön Görünüm -->
+  <div id="front-map" class="map-wrapper">
+    <img src="on.jpg" alt="Ön Beden Haritası">
+    <button class="hotspot" data-region="head"      style="left:9.09%;  top:0%;     width:63.07%; height:16.60%;"></button>
+    <button class="hotspot" data-region="eyes"      style="left:40.53%; top:5.86%;  width:18.94%; height:3.91%;"></button>
+    <button class="hotspot" data-region="mouth"     style="left:43.56%; top:10.74%; width:11.36%; height:3.91%;"></button>
+    <button class="hotspot" data-region="neck"      style="left:46.97%; top:15.62%; width:7.58%;  height:5.86%;"></button>
+    <button class="hotspot" data-region="shoulders" style="left:24%;    top:19%;    width:7%;     height:4%;     z-index:5;"></button>
+    <button class="hotspot" data-region="shoulders" style="left:71%;    top:19%;    width:7%;     height:4%;     z-index:5;"></button>
+    <button class="hotspot" data-region="arms"      style="left:21%;    top:25%;    width:8%;     height:12%;    z-index:10;"></button>
+    <button class="hotspot" data-region="arms"      style="left:74%;    top:25%;    width:8%;     height:12%;    z-index:10;"></button>
+    <button class="hotspot" data-region="hands"     style="left:8%;     top:45%;    width:15%;    height:10%;    z-index:10;"></button>
+    <button class="hotspot" data-region="hands"     style="left:77%;    top:45%;    width:15%;    height:10%;    z-index:10;"></button>
+    <button class="hotspot" data-region="chest"     style="left:35%;    top:25.39%; width:30%;    height:9.22%;   z-index:2;"></button>
+    <button class="hotspot" data-region="stomach"   style="left:39.77%; top:37.11%; width:28.41%; height:9.77%;"></button>
+    <button class="hotspot" data-region="legs"      style="left:30.30%; top:46.88%; width:19%;    height:29.30%;"></button>
+    <button class="hotspot" data-region="legs"      style="left:50.30%; top:46.88%; width:19%;    height:29.30%;"></button>
+    <button class="hotspot" data-region="feet"      style="left:34.09%; top:76.17%; width:15%;    height:23.83%;"></button>
+    <button class="hotspot" data-region="feet"      style="left:50.09%; top:76.17%; width:15%;    height:23.83%;"></button>
+  </div>
+
+  <!-- Arka Görünüm -->
+  <div id="back-map" class="map-wrapper hidden">
+    <img src="arka.jpg" alt="Arka Beden Haritası">
+    <button class="hotspot" data-region="head"      style="left:9.09%;  top:0%;     width:63.07%; height:16.60%;"></button>
+    <button class="hotspot" data-region="neck"      style="left:46.97%; top:15.62%; width:7.58%;  height:5.86%;"></button>
+    <button class="hotspot" data-region="shoulders" style="left:24%;    top:19%;    width:7%;     height:4%;     z-index:5;"></button>
+    <button class="hotspot" data-region="shoulders" style="left:69%;    top:19%;    width:7%;     height:4%;     z-index:5;"></button>
+    <button class="hotspot" data-region="back"      style="left:28.41%; top:25.39%; width:38.56%; height:11.72%;"></button>
+    <button class="hotspot" data-region="arms"      style="left:18%;    top:25%;    width:8%;     height:12%;    z-index:10;"></button>
+    <button class="hotspot" data-region="arms"      style="left:71%;    top:25%;    width:8%;     height:12%;    z-index:10;"></button>
+    <button class="hotspot" data-region="hands"     style="left:8%;     top:45%;    width:15%;    height:10%;    z-index:10;"></button>
+    <button class="hotspot" data-region="hands"     style="left:77%;    top:45%;    width:15%;    height:10%;    z-index:10;"></button>
+    <button class="hotspot" data-region="legs"      style="left:30.30%; top:46.88%; width:19%;    height:29.30%;"></button>
+    <button class="hotspot" data-region="legs"      style="left:50.30%; top:46.88%; width:19%;    height:29.30%;"></button>
+    <button class="hotspot" data-region="feet"      style="left:34.09%; top:76.17%; width:15%;    height:23.83%;"></button>
+    <button class="hotspot" data-region="feet"      style="left:50.09%; top:76.17%; width:15%;    height:23.83%;"></button>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-content">
+      <button class="modal-close-btn" id="closeModalBtn">&times;</button>
+      <h3 id="modalTitle"></h3>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script>
+    // saklanan cevaplar
+    const savedAnswers = {};
+
+    // sorular EK3_Beden_Bölgeleri_Anket_Yapisi.docx’ten
+    const regionQuestions = {
+      head:    [ "Ağrı","Uyuşma","Zonklama","Baskı/ ağırlık hissi","Sersemlik/ baş dönmesi" ],
+      eyes:    [ "Batma hissi","Kaşıntı","Yanma hissi","Göz seyirmesi" ],
+      mouth:   [ "Dudaklarda seğirme","Diş sıkma","Çene gerginliği/ kilitlenme","Yanak ısırma" ],
+      neck:    [ "Kas gerginliği/ kasılma","Boyun tutulması","Ağrı","Yanma hissi" ],
+      shoulders:[ "Ağrı","Kas kasılması/ gerginlik","Hareket kısıtlılığı/ donukluk hissi","Ağırlaşma hissi" ],
+      chest:   [ "Baskı/ sıkışma hissi","Kalp çarpıntısı","Kesik kesik nefes alma","İçsel titreme/ kasılma" ],
+      stomach: [ "Bulantı hissi","Kıramp/ kasılma","Şişkinlik hissi","Yanma hissi/ mide ekşimesi" ],
+      back:    [ "Bel ağrısı","Sırt kaslarında gerginlik","Yanıcı/ bıçak saplanır gibi ağrı","Tutulma hissi" ],
+      arms:    [ "Uyuşma/ karıncalanma/ yanma hissi","Ağırlık hissi","Kas gerginliği/ kasılma","Soğukluk/ üşüme hissi" ],
+      legs:    [ "Uyuşma/ karıncalanma/ yanma hissi","Ağırlık hissi","Huzursuzluk hissi/ hareket ettirme ihtiyacı","Soğukluk/ üşüme hissi" ],
+      hands:   [ "Uyuşma/ karıncalanma/ yanma hissi","Titreme","Kas gerginliği/ kasılma","Soğukluk/ üşüme hissi" ],
+      feet:    [ "Uyuşma/ karıncalanma/ yanma hissi","Batma hissi","Hissizlik/ donukluk","Soğukluk/ üşüme hissi" ]
+    };
+
+    const regionTitles = {
+      head: 'Baş', eyes: 'Gözler', mouth: 'Ağız / Dudak', neck: 'Boyun',
+      shoulders: 'Omuzlar', arms: 'Kollar', legs: 'Bacaklar', hands: 'Eller',
+      chest: 'Göğüs', stomach: 'Mide / Karın', back: 'Bel / Sırt', feet: 'Ayaklar'
+    };
+
+    const frontMap = document.getElementById('front-map');
+    const backMap  = document.getElementById('back-map');
+    document.getElementById('frontViewBtn').onclick = () => {
+      frontMap.classList.remove('hidden');
+      backMap.classList.add('hidden');
+      frontViewBtn.classList.add('active');
+      backViewBtn.classList.remove('active');
+    };
+    document.getElementById('backViewBtn').onclick = () => {
+      backMap.classList.remove('hidden');
+      frontMap.classList.add('hidden');
+      backViewBtn.classList.add('active');
+      frontViewBtn.classList.remove('active');
+    };
+
+    document.querySelectorAll('.hotspot').forEach(btn =>
+      btn.addEventListener('click', () => {
+        const region = btn.dataset.region;
+        document.getElementById('modalTitle').textContent = regionTitles[region];
+        const qs = regionQuestions[region] || [];
+        const body = document.getElementById('modalBody');
+        if (!qs.length) {
+          body.innerHTML = '<p>Henüz soru tanımlanmamış.</p>';
+        } else {
+          // modal içeriğini oluştur
+          body.innerHTML = qs.map((q,i) =>
+            `<div class="question">
+               <label>
+                 <input type="checkbox" name="${region}-q${i}" value="${q}" />
+                 ${q}
+               </label>
+             </div>`
+          ).join('');
+          // önceki seçimleri uygula
+          const prev = savedAnswers[region] || [];
+          body.querySelectorAll('input[type=checkbox]').forEach(ch => {
+            ch.checked = prev.includes(ch.value);
+            // değişiklik olunca kaydet
+            ch.addEventListener('change', () => {
+              const arr = savedAnswers[region] = savedAnswers[region] || [];
+              if (ch.checked) {
+                if (!arr.includes(ch.value)) arr.push(ch.value);
+              } else {
+                const idx = arr.indexOf(ch.value);
+                if (idx>-1) arr.splice(idx,1);
+              }
+            });
+          });
+        }
+        document.getElementById('modalOverlay').classList.add('active');
+      })
+    );
+
+    document.getElementById('closeModalBtn').onclick = () =>
+      document.getElementById('modalOverlay').classList.remove('active');
+  </script>
+</body>
+</html>
